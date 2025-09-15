@@ -5,6 +5,9 @@ A Flutter app that captures meal photos, sends them to Gemini AI for analysis, s
 Includes secure API-key handling, offline support, and robust parsing/fallbacks for varied Gemini output.
 
 ---
+## 🎥 Demo Video
+
+[▶️ Watch Demo](https://raw.githubusercontent.com/Lopezzz56/meal_analyzer_planner/main/assets/demo.mp4)
 
 ## 📚 Table of Contents
 
