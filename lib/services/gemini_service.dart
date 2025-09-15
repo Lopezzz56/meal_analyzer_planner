@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 class GeminiService {
@@ -8,8 +9,7 @@ class GeminiService {
   factory GeminiService() => _instance;
   GeminiService._internal();
 
-  final String _apiKey = const String.fromEnvironment("GEMINI_API_KEY"); // pass with --dart-define
-  final Dio _dio = Dio(
+    final String _apiKey = dotenv.env['GEMINI_API_KEY'] ?? '';   final Dio _dio = Dio(
     BaseOptions(baseUrl: "https://generativelanguage.googleapis.com/v1beta"),
   );
 

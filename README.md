@@ -18,6 +18,7 @@ Includes secure API-key handling, offline support, and robust parsing/fallbacks 
 
 ---
 
+
 ## 🚀 Quick Start
 
 ```bash
@@ -25,6 +26,17 @@ git clone https://github.com/your-username/meal-analyzer-planner.git
 cd meal-analyzer-planner
 flutter pub get
 ```
+
+### 🔐 Set Up Your `.env` File
+
+Create a `.env` file in the root of your project and add your Gemini API key:
+
+```
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+---
+
 
 ### Development (hot reload)
 
@@ -34,12 +46,11 @@ flutter run --dart-define=GEMINI_API_KEY="your_gemini_api_key_here"
 
 ### Release APK
 
+
+# Run the app
 ```bash
-flutter build apk --release --dart-define=GEMINI_API_KEY="your_gemini_api_key_here"
+flutter run
 ```
-
-Alternatively, use `flutter_dotenv` for local dev and still pass `--dart-define` for release.
-
 ---
 
 ## 🛠️ Prerequisites
@@ -52,28 +63,6 @@ Alternatively, use `flutter_dotenv` for local dev and still pass `--dart-define`
 
 ---
 
-## 📁 Project Structure
-
-```
-lib/
-├─ main.dart
-├─ app.dart
-├─ screens/
-│  ├─ analysis_screen.dart
-│  ├─ meal_detail_page.dart
-│  ├─ history/
-│  └─ planner/
-├─ widgets/
-├─ services/
-│  ├─ gemini_service.dart
-│  ├─ db_service.dart
-│  └─ storage_service.dart
-├─ models/
-├─ providers/     (or riverpod/ blocs/ depending on choice)
-└─ utils/
-```
-
----
 
 ## ✨ Features
 
@@ -203,11 +192,18 @@ Gemini output formats vary:
 
 ## 🧪 Run / Build / Release
 
-
+### Local Development
 
 ```bash
-flutter run --dart-define=GEMINI_API_KEY="your_key_here"
+flutter run
 ```
+
+### Release Build
+
+```bash
+flutter build apk --release
+```
+
 
 > Grant camera & storage permissions when prompted.
 

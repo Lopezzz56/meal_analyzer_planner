@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:meal_analyzer_planner/components/theme.dart';
 import 'package:meal_analyzer_planner/routes/router.dart';
 import 'package:provider/provider.dart';
 import 'routes/global_state.dart';
 
-void main() {
+Future<void> main() async {
+  // ✅ Ensure Flutter bindings are initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // ✅ Load .env file before running the app
+  await dotenv.load(fileName: ".env");
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => GlobalState(),
@@ -12,6 +19,7 @@ void main() {
     ),
   );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
