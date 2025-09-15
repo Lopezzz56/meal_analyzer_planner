@@ -1,0 +1,215 @@
+# 🍽️ Meal Analyzer & Planner — README
+
+A Flutter app that captures meal photos, sends them to Gemini AI for analysis, stores results locally, and provides meal planning, history, analytics, and progress visualization.
+
+Includes secure API-key handling, offline support, and robust parsing/fallbacks for varied Gemini output.
+
+---
+
+## 📚 Table of Contents
+
+- [Quick Start](#quick-start)
+- [Prerequisites](#prerequisites)
+- [Project Structure](#project-structure)
+- [Features](#features)
+- [Architecture & Why We Chose It](#architecture--why-we-chose-it)
+- [How the AI Response Is Handled & Saved](#how-the-ai-response-is-handled--saved)
+- [Error Handling & Implemented Edge-Cases](#error-handling--implemented-edge-cases)
+
+---
+
+## 🚀 Quick Start
+
+```bash
+git clone https://github.com/your-username/meal-analyzer-planner.git
+cd meal-analyzer-planner
+flutter pub get
+```
+
+### Development (hot reload)
+
+```bash
+flutter run --dart-define=GEMINI_API_KEY="your_gemini_api_key_here"
+```
+
+### Release APK
+
+```bash
+flutter build apk --release --dart-define=GEMINI_API_KEY="your_gemini_api_key_here"
+```
+
+Alternatively, use `flutter_dotenv` for local dev and still pass `--dart-define` for release.
+
+---
+
+## 🛠️ Prerequisites
+
+- Latest stable Flutter SDK (`flutter --version`)
+- Android Studio / VS Code + Android SDK
+- For iOS builds: Xcode + macOS
+- Gemini API account and key (via Google Cloud / Gemini console)
+- Optional: `adb` and connected device/emulator
+
+---
+
+## 📁 Project Structure
+
+```
+lib/
+├─ main.dart
+├─ app.dart
+├─ screens/
+│  ├─ analysis_screen.dart
+│  ├─ meal_detail_page.dart
+│  ├─ history/
+│  └─ planner/
+├─ widgets/
+├─ services/
+│  ├─ gemini_service.dart
+│  ├─ db_service.dart
+│  └─ storage_service.dart
+├─ models/
+├─ providers/     (or riverpod/ blocs/ depending on choice)
+└─ utils/
+```
+
+---
+
+## ✨ Features
+
+- Camera capture and gallery pick for meal photos
+- Send photo to Gemini AI, parse markdown/JSON output
+- Show results: meal name, description, nutrition (calories, protein, carbs, fat, fiber), ingredients
+- Save only recognized meals to local DB (`sqflite`)
+- Meal planning assistant via Gemini AI
+- History screen with image previews and nutrition summary
+- Nutrition tracking: daily/weekly totals, charts
+- Filters, search, and delete saved meals
+- Offline support
+- Dark mode and responsive UI
+- Error handling and retry logic
+
+---
+
+## 🧠 Architecture & Why We Chose It
+
+### Folder + Services Separation
+
+- `services/` contains side-effectful code (API, DB)
+- Keeps UI widgets pure and testable
+
+## 🧭 Navigation: `go_router` + `ShellRoute`
+
+---
+
+### 🚀 Why `go_router`?
+
+- Declarative, URL-based routing (similar to web apps)
+- Supports nested navigation and `ShellRoute` for layouts like `BottomNavigationBar` or `TabBar`
+- Handles deep linking and redirection with ease
+- Simplifies routing logic while keeping it testable and maintainable
+
+---
+
+### 🧱 ShellRoute Usage
+
+- Enables a **persistent layout** (e.g., `BottomNavigationBar`) while switching pages inside the shell
+- Each tab can have its own **nested navigator**, preserving state across tabs
+- Makes complex multi-tab apps **cleaner and more scalable** than manual `Navigator` stack management
+
+---
+
+### ✅ Benefits Summary
+
+| Feature                     | Benefit                                                  |
+|----------------------------|-----------------------------------------------------------|
+| Declarative routing        | Easier to reason about and test                           |
+| ShellRoute support         | Clean tab-based navigation with persistent UI             |
+| Deep linking               | Seamless integration with external URLs                   |
+| State preservation         | Each tab maintains its own navigation history             |
+| Simplified logic           | Reduces boilerplate and manual stack manipulation         |
+
+## 🤖 How the AI Response Is Handled & Saved
+
+Gemini output formats vary:
+
+- Markdown
+- JSON inside triple backticks
+- Raw object: `candidates → content → parts → text`
+
+### Parsing Strategy
+
+- Prefer structured JSON if available
+- If markdown/text:
+  - Remove triple-backtick fences
+  - Use regex to extract:
+    - `**Meal Name:**`
+    - `**Calories:**`, `**Protein:**`, etc.
+    - Bullet lists for ingredients
+  - Support numeric ranges (e.g., 350–450 → average)
+
+### Stored DB Row Format
+
+```json
+{
+  "analysis": "<extracted markdown text>",
+  "meal": "<extracted meal name>",
+  "raw": { /* raw Gemini response */ },
+  "totals": { "calories": 350, "protein": 12, "carbs": 70, "fat": 6 }
+}
+```
+
+> If meal name is missing or marked "Unknown", entry is **not saved** to DB.
+
+---
+
+## 🛡️ Error Handling & Implemented Edge-Cases
+
+### API & Network
+
+- Loading/error states with spinner and retry
+- Retry logic for transient failures
+- Timeouts for Gemini API calls
+
+### Parsing Variability
+
+- Supports:
+  - Markdown with headings and bullets
+  - JSON inside backticks
+  - Raw Gemini result object
+- Handles malformed/truncated output:
+  - JSON decode → fallback to regex
+  - Ranges → midpoint
+  - Formatting issues → sanitize digits/commas
+
+### Permissions & Camera
+
+- Friendly message if camera permission denied
+- Fallback to gallery if camera unavailable
+
+### Database & Storage
+
+- All inserts wrapped in `try/catch`
+- Safe JSON decode on read
+- Migration support via `fixOldMeals()`
+
+### UI Edge-Cases
+
+- Hide nutrition card if values missing
+- Show only available macros
+- Trim long ingredient lists/descriptions
+
+---
+
+## 🧪 Run / Build / Release
+
+
+
+```bash
+flutter run --dart-define=GEMINI_API_KEY="your_key_here"
+```
+
+> Grant camera & storage permissions when prompted.
+
+---
+
